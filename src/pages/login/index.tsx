@@ -1,9 +1,10 @@
-import AnimatedBlock from './AnimatedBlock';
-import FormBlock from './FormBlock';
+import AnimatedBlock from './modules/AnimatedBlock';
+import FormBlock from './modules/FormBlock';
+import './styles.scss';
 
 export default function Login() {
   return (
-    <div className='min-h-screen bg-background flex flex-row'>
+    <div className='h-screen bg-background flex flex-row p-4'>
       <AnimatedBlock />
       <FormBlock />
     </div>

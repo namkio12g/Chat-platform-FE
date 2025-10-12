@@ -1,0 +1,127 @@
+.animated-block {
+  aspect-ratio: 12/11;
+  height: fit-content;
+  &-grid-bg {
+    width: 110%;
+    top: -25%;
+    left: -5%;
+    .moving-blocks-grid {
+      &:hover {
+        .tile {
+          animation-play-state: paused;
+        }
+      }
+    }
+  }
+  .tile {
+    animation: 8s ease-in-out infinite;
+    aspect-ratio: 1/1;
+    min-width: 0px;
+    // width: 100%;
+  }
+  .t-1 {
+    animation-name: tile-1-animation;
+  }
+  .t-2 {
+    animation-name: tile-2-animation;
+  }
+  .t-3 {
+    animation-name: tile-3-animation;
+  }
+  .t-4 {
+    animation-name: tile-4-animation;
+  }
+
+  @keyframes tile-1-animation {
+    0% {
+      transform: translate(0, 0);
+    }
+    12.5% {
+      transform: translate(0, 100%);
+    }
+    25% {
+      transform: translate(0, 200%);
+    }
+    50% {
+      transform: translate(100%, 200%);
+    }
+    62.5% {
+      transform: translate(100%, 100%);
+    }
+    75% {
+      transform: translate(100%, 0);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+  @keyframes tile-2-animation {
+    0% {
+      transform: translate(0, 0);
+    }
+    12.5% {
+      transform: translate(0, 100%);
+    }
+    25% {
+      transform: translate(100%, 100%);
+    }
+    50% {
+      transform: translate(100%, 0%);
+    }
+    62.5% {
+      transform: translate(100%, -100%);
+    }
+    75% {
+      transform: translate(0%, -100%);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+  @keyframes tile-3-animation {
+    0% {
+      transform: translate(0, 0);
+    }
+    12.5% {
+      transform: translate(0, -100%);
+    }
+    25% {
+      transform: translate(-100%, -100%);
+    }
+    50% {
+      transform: translate(-100%, 0%);
+    }
+    62.5% {
+      transform: translate(-100%, 100%);
+    }
+    75% {
+      transform: translate(0%, 100%);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+  @keyframes tile-4-animation {
+    0% {
+      transform: translate(0, 0);
+    }
+    12.5% {
+      transform: translate(0, -100%);
+    }
+    25% {
+      transform: translate(0%, -200%);
+    }
+    50% {
+      transform: translate(-100%, -200%);
+    }
+    62.5% {
+      transform: translate(-100%, -100%);
+    }
+    75% {
+      transform: translate(-100%, 0%);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+}

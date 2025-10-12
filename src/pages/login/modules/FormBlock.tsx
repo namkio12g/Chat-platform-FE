@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function FormBlock() {
   const [email, setEmail] = useState('');
@@ -23,13 +24,13 @@ export default function FormBlock() {
   };
 
   return (
-    <div className='w-1/2 h-screen bg-white flex items-center justify-center p-8'>
+    <div className='w-1/2 h-screen bg-white flex items-center justify-center p-8  dark:bg-gray-900'>
       <div className='w-full max-w-md'>
         {/* Header */}
         <div className='text-center mb-8'>
           <div className='flex items-center justify-center gap-2 mb-4'>
             <MessageCircle className='h-10 w-10 text-primary' />
-            <h1 className='text-3xl font-bold'>Chat Platform</h1>
+            <h1 className='text-3xl font-bold'>GoChat Platform</h1>
           </div>
           <p className='text-muted-foreground'>
             Sign in to your account to continue
@@ -37,7 +38,7 @@ export default function FormBlock() {
         </div>
 
         {/* Login Form */}
-        <div className='bg-white rounded-2xl p-8 shadow-xl border border-gray-100'>
+        <div className='bg-white rounded-2xl p-8 shadow-xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700'>
           <form onSubmit={handleSubmit} className='space-y-6'>
             <div className='space-y-2'>
               <label htmlFor='email' className='text-sm font-medium'>

@@ -13,6 +13,7 @@ import {
   incrementByAmount,
 } from '@/store/slices/counterSlice';
 import { usePosts } from '@/hooks/usePosts';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { MessageCircle, Plus, Minus, Database } from 'lucide-react';
 
 function App() {
@@ -28,6 +29,9 @@ function App() {
           <div className='flex items-center justify-center gap-2'>
             <MessageCircle className='h-8 w-8 text-primary' />
             <h1 className='text-4xl font-bold'>Chat Platform</h1>
+            <div className='ml-auto'>
+              <ThemeToggle />
+            </div>
           </div>
           <p className='text-muted-foreground text-lg'>
             Built with React, Redux, TanStack Query, Tailwind CSS, and shadcn/ui

@@ -3,6 +3,7 @@ import Home from '@/pages/Home';
 import Login from '@/pages/login';
 import Dashboard from '@/pages/Dashboard/index';
 import App from '@/App';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -15,7 +16,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <Dashboard />,
+    element: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '*',
@@ -24,5 +29,5 @@ export const router = createBrowserRouter([
   {
     path: '/app',
     element: <App />,
-  }
+  },
 ]);

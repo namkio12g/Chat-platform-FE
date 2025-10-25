@@ -15,11 +15,16 @@ import {
 import { usePosts } from '@/hooks/usePosts';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { MessageCircle, Plus, Minus, Database } from 'lucide-react';
+import { Toaster } from 'sonner';
+import { useAuthInitialization } from '@/hooks/useAuthInitialization';
 
 function App() {
   const count = useAppSelector((state) => state.counter.value);
   const dispatch = useAppDispatch();
   const { data: posts, isLoading, error } = usePosts();
+
+  // Initialize authentication from localStorage
+  useAuthInitialization();
 
   return (
     <div className='min-h-screen bg-background p-8'>
@@ -159,6 +164,7 @@ function App() {
           </CardContent>
         </Card>
       </div>
+      <Toaster />
     </div>
   );
 }

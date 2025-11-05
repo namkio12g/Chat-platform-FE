@@ -13,16 +13,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   useEffect(() => {
     // Initialize theme on mount
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark'  | null;
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
       dispatch(setTheme(savedTheme));
-    } 
+    }
   }, [dispatch]);
 
   useEffect(() => {
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = () => {
       if (theme === 'light') {
         dispatch(updateResolvedTheme());
@@ -39,13 +39,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     document.documentElement.classList.add(resolvedTheme);
   }, [resolvedTheme]);
 
-  return <>
-  <div className='relative'>
-  <div className='ml-auto fixed top-4 right-4 '>
-    <ThemeToggle />
-  </div>
+  return (
+    <>
+      <div className='relative bg-background'>
+        <div className='ml-auto fixed top-4 right-4 '>
+          <ThemeToggle />
+        </div>
 
-  {children}
-  </div>
-  </>;
+        {children}
+      </div>
+    </>
+  );
 }

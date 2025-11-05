@@ -6,12 +6,10 @@ import { RouterProvider } from 'react-router-dom';
 import { store } from './store';
 import { queryClient } from './lib/queryClient';
 import { router } from './router';
-import { ThemeProvider } from './components/ThemeProvider';
+import { ThemeProvider } from './context/ThemeProvider';
 import './index.css';
 import { Toaster } from 'sonner';
 
-useAuthInitialization();
-x;
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>

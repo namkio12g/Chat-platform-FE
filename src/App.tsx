@@ -13,7 +13,7 @@ import {
   incrementByAmount,
 } from '@/store/slices/counterSlice';
 import { usePosts } from '@/hooks/usePosts';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { ThemeToggle } from '@/context/ThemeToggle';
 import { MessageCircle, Plus, Minus, Database } from 'lucide-react';
 import { Toaster } from 'sonner';
 import { useAuthInitialization } from '@/hooks/useAuthInitialization';

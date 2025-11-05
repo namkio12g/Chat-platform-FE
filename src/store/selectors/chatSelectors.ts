@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { RootState } from '../index';
+import type { RootState } from '../index';
 
 // Basic selectors
 export const selectChat = (state: RootState) => state.chat;

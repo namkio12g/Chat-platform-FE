@@ -39,7 +39,7 @@ export default function FormBlock() {
   };
 
   return (
-    <div className='w-1/2 h-screen bg-white flex items-center justify-center p-8  dark:bg-gray-900'>
+    <div className='w-1/2 h-screen bg-background flex items-center justify-center p-8  '>
       <div className='w-full max-w-md'>
         {/* Header */}
         <div className='text-center mb-8'>
@@ -53,7 +53,7 @@ export default function FormBlock() {
         </div>
 
         {/* Login Form */}
-        <div className='bg-white rounded-2xl p-8 shadow-xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700'>
+        <div className='bg-slate-200 rounded-2xl p-8 shadow-xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700'>
           <form onSubmit={handleSubmit} className='space-y-6'>
             <div className='space-y-2'>
               <label htmlFor='email' className='text-sm font-medium'>
@@ -138,19 +138,15 @@ export default function FormBlock() {
           <div className='mt-6 text-center'>
             <p className='text-sm text-muted-foreground'>
               Don't have an account?{' '}
-              <button className='text-primary hover:underline transition-colors'>
+              <button
+                type='button'
+                onClick={() => navigate('/signup')}
+                className='text-primary hover:underline transition-colors'
+              >
                 Sign up
               </button>
             </p>
           </div>
-        </div>
-
-        {/* Demo Info */}
-        <div className='mt-6 p-4 bg-muted/50 rounded-lg'>
-          <p className='text-sm text-muted-foreground text-center'>
-            <strong>Demo:</strong> Use any email from the database and password:{' '}
-            <code className='bg-gray-200 px-1 rounded'>password123</code>
-          </p>
         </div>
       </div>
     </div>

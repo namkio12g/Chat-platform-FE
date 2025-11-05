@@ -73,11 +73,11 @@ export const useChannels = () => {
   });
 };
 
-export const useChannel = (id: number) => {
+export const useConversationsOfUser = (userId: number) => {
   return useQuery({
-    queryKey: ['channel', id],
-    queryFn: () => api.getChannel(id),
-    enabled: !!id,
+    queryKey: ['conversationsOfUser', userId],
+    queryFn: () => api.getConversationsOfUser(userId),
+    enabled: !!userId,
   });
 };
 

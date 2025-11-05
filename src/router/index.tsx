@@ -1,18 +1,30 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import Home from '@/pages/Home';
 import Login from '@/pages/login';
+import Signup from '@/pages/signup';
 import Dashboard from '@/pages/Dashboard/index';
 import App from '@/App';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { ProtectedRoute } from '@/context/ProtectedRoute';
 
 export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Home />,
-  },
+  // {
+  //   path: '/',
+  //   element: <Home />,
+  // },
   {
     path: '/login',
     element: <Login />,
+  },
+  {
+    path: '/signup',
+    element: <Signup />,
+  },
+  {
+    path: '/',
+    element: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/dashboard',

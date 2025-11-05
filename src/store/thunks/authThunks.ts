@@ -1,8 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '@/services/api';
-import type { LoginCredentials, User } from '@/services/api';
-import type { RootState } from '../index';
-import { toast } from 'sonner';
+import type { LoginCredentials, SignupCredentials, User } from '@/services/api';
 
 // Login thunk
 export const loginUser = createAsyncThunk(
@@ -14,6 +12,21 @@ export const loginUser = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : 'Login failed'
+      );
+    }
+  }
+);
+
+// Signup thunk
+export const signupUser = createAsyncThunk(
+  'auth/signupUser',
+  async (credentials: SignupCredentials, { rejectWithValue }) => {
+    try {
+      const response = await api.signup(credentials);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Signup failed'
       );
     }
   }
@@ -56,8 +69,7 @@ export const getCurrentUser = createAsyncThunk(
 // Initialize auth from localStorage
 export const initializeAuth = createAsyncThunk(
   'auth/initializeAuth',
-  async (_, { dispatch, getState }) => {
-    const state = getState() as RootState;
+  async () => {
     const token = localStorage.getItem('auth_token');
     const userStr = localStorage.getItem('user');
 
@@ -65,7 +77,7 @@ export const initializeAuth = createAsyncThunk(
       try {
         const user = JSON.parse(userStr) as User;
         return { user, token };
-      } catch (error) {
+      } catch {
         // Clear invalid data
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user');

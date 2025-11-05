@@ -4,7 +4,7 @@ import './styles.scss';
 
 export default function Login() {
   return (
-    <div className='h-screen bg-background flex flex-row p-4 dark:bg-gray-900 '>
+    <div className='h-screen bg-background flex flex-row p-4'>
       <AnimatedBlock />
       <FormBlock />
     </div>

@@ -56,7 +56,97 @@
       "password": "password123"
     }
   ],
-  "channels": [
+  "friends": [
+    {
+      "id": 1,
+      "userId": 1,
+      "friendId": 2,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "friendId": 3,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "friendId": 4,
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "userId": 1,
+      "friendId": 5,
+      "status": "active"
+    },
+    {
+      "id": 5,
+      "userId": 2,
+      "friendId": 1,
+      "status": "active"
+    },
+    {
+      "id": 6,
+      "userId": 2,
+      "friendId": 3,
+      "status": "active"
+    },
+    {
+      "id": 7,
+      "userId": 2,
+      "friendId": 4,
+      "status": "active"
+    },
+    {
+      "id": 8,
+      "userId": 2,
+      "friendId": 5,
+      "status": "active"
+    }
+  ],
+  "conversations": [
+    {
+      "id": 1,
+      "type": "direct",
+      "name": "John Doe and Sarah Wilson",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "type": "group",
+      "name": "Team 1",
+      "status": "active"
+    }
+  ],
+  "conversationMembers": [
+    {
+      "id": 1,
+      "conversationId": 1,
+      "userId": 1,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "conversationId": 1,
+      "userId": 2,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "conversationId": 2,
+      "userId": 1,
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "conversationId": 2,
+      "userId": 2,
+      "status": "active"
+    }
+  ],
+  "chcannels": [
     {
       "id": 1,
       "name": "general",
@@ -97,7 +187,7 @@
   "messages": [
     {
       "id": 1,
-      "channelId": 1,
+      "conversationId": 1,
       "userId": 1,
       "content": "Welcome everyone to our new chat platform! 🎉",
       "timestamp": "2024-01-15T09:00:00Z",
@@ -110,7 +200,7 @@
     },
     {
       "id": 2,
-      "channelId": 1,
+      "conversationId": 1,
       "userId": 2,
       "content": "Thanks John! This looks amazing! ✨",
       "timestamp": "2024-01-15T09:05:00Z",
@@ -120,7 +210,7 @@
     },
     {
       "id": 3,
-      "channelId": 1,
+      "conversationId": 1,
       "userId": 3,
       "content": "I love the new interface! Much better than the old system.",
       "timestamp": "2024-01-15T09:10:00Z",
@@ -130,7 +220,7 @@
     },
     {
       "id": 4,
-      "channelId": 2,
+      "conversationId": 2,
       "userId": 1,
       "content": "Hey team, I've pushed the latest changes to the main branch. Please review when you get a chance.",
       "timestamp": "2024-01-15T09:15:00Z",
@@ -140,7 +230,7 @@
     },
     {
       "id": 5,
-      "channelId": 2,
+      "conversationId": 2,
       "userId": 5,
       "content": "I'll take a look at the PR now. Thanks for the heads up!",
       "timestamp": "2024-01-15T09:20:00Z",
@@ -150,7 +240,7 @@
     },
     {
       "id": 6,
-      "channelId": 3,
+      "conversationId": 2,
       "userId": 2,
       "content": "I've updated the design mockups for the new feature. Check them out in the shared folder.",
       "timestamp": "2024-01-15T09:25:00Z",
@@ -160,23 +250,13 @@
     },
     {
       "id": 7,
-      "channelId": 1,
+      "conversationId": 2,
       "userId": 4,
       "content": "Has anyone seen the latest updates to the project timeline?",
       "timestamp": "2024-01-15T09:30:00Z",
       "type": "text",
       "isEdited": false,
       "reactions": []
-    },
-    {
-      "id": 8,
-      "channelId": 4,
-      "userId": 3,
-      "content": "Anyone up for a coffee break? ☕",
-      "timestamp": "2024-01-15T09:35:00Z",
-      "type": "text",
-      "isEdited": false,
-      "reactions": [{ "emoji": "☕", "count": 2, "users": [1, 5] }]
     }
   ],
   "directMessages": [

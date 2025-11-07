@@ -52,7 +52,11 @@ const authSlice = createSlice({
     },
     loginSuccess: (
       state,
-      action: PayloadAction<{ user: User; token: string }>
+      action: PayloadAction<{
+        user: User;
+        token: string;
+        refresh_token: string;
+      }>
     ) => {
       state.isLoading = false;
       state.user = action.payload.user;
@@ -62,6 +66,7 @@ const authSlice = createSlice({
 
       // Store in localStorage
       localStorage.setItem('auth_token', action.payload.token);
+      localStorage.setItem('refresh_token', action.payload.refresh_token);
       localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
     loginFailure: (state, action: PayloadAction<string>) => {

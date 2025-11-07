@@ -9,6 +9,7 @@
 ## **1. 🔐 AUTHENTICATION APIs**
 
 ### **1.1 Đăng ký tài khoản**
+
 ```http
 POST /api/v1/auth/register
 Content-Type: application/json
@@ -19,7 +20,9 @@ Content-Type: application/json
   "password": "password123"
 }
 ```
+
 **Response:**
+
 ```json
 {
   "user": {
@@ -34,6 +37,7 @@ Content-Type: application/json
 ```
 
 ### **1.2 Đăng nhập**
+
 ```http
 POST /api/v1/auth/login
 Content-Type: application/json
@@ -45,6 +49,7 @@ Content-Type: application/json
 ```
 
 ### **1.3 Refresh Token**
+
 ```http
 POST /api/v1/auth/refresh
 Content-Type: application/json
@@ -55,6 +60,7 @@ Content-Type: application/json
 ```
 
 ### **1.4 Đăng xuất**
+
 ```http
 POST /api/v1/auth/logout
 Authorization: Bearer <access_token>
@@ -65,22 +71,26 @@ Authorization: Bearer <access_token>
 ## **2. 👤 USER APIs**
 
 ### **2.1 Lấy thông tin user theo ID**
+
 ```http
 GET /api/v1/users/{id}
 ```
 
 ### **2.2 Lấy thông tin user theo email**
+
 ```http
 GET /api/v1/users?email=user@example.com
 ```
 
 ### **2.3 Lấy profile của user hiện tại**
+
 ```http
 GET /api/v1/users/profile
 Authorization: Bearer <access_token>
 ```
 
 ### **2.4 Cập nhật profile**
+
 ```http
 PATCH /api/v1/users/profile
 Authorization: Bearer <access_token>
@@ -97,6 +107,7 @@ Content-Type: application/json
 ## **3. 💬 CONVERSATION APIs**
 
 ### **3.1 Tạo cuộc trò chuyện trực tiếp**
+
 ```http
 POST /api/v1/conversations/direct
 Authorization: Bearer <access_token>
@@ -108,6 +119,7 @@ Content-Type: application/json
 ```
 
 ### **3.2 Tạo cuộc trò chuyện nhóm**
+
 ```http
 POST /api/v1/conversations/group
 Authorization: Bearer <access_token>
@@ -120,12 +132,14 @@ Content-Type: application/json
 ```
 
 ### **3.3 Lấy danh sách cuộc trò chuyện**
+
 ```http
 GET /api/v1/conversations?limit=20&offset=0
 Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 {
   "conversations": [
@@ -151,6 +165,7 @@ Authorization: Bearer <access_token>
 ```
 
 ### **3.4 Lấy thông tin cuộc trò chuyện**
+
 ```http
 GET /api/v1/conversations/{id}
 Authorization: Bearer <access_token>
@@ -161,6 +176,7 @@ Authorization: Bearer <access_token>
 ## **4. 📨 MESSAGE APIs**
 
 ### **4.1 Gửi tin nhắn**
+
 ```http
 POST /api/v1/conversations/{id}/messages
 Authorization: Bearer <access_token>
@@ -172,6 +188,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -188,12 +205,14 @@ Content-Type: application/json
 ```
 
 ### **4.2 Lấy tin nhắn trong cuộc trò chuyện**
+
 ```http
 GET /api/v1/conversations/{id}/messages?limit=50&offset=0
 Authorization: Bearer <access_token>
 ```
 
 ### **4.3 Cập nhật tin nhắn**
+
 ```http
 PATCH /api/v1/messages/{id}
 Authorization: Bearer <access_token>
@@ -205,6 +224,7 @@ Content-Type: application/json
 ```
 
 ### **4.4 Xóa tin nhắn**
+
 ```http
 DELETE /api/v1/messages/{id}
 Authorization: Bearer <access_token>
@@ -215,6 +235,7 @@ Authorization: Bearer <access_token>
 ## **5. 📎 MEDIA APIs (File Upload)**
 
 ### **5.1 Tạo presigned URL**
+
 ```http
 POST /api/v1/media/presign
 Authorization: Bearer <access_token>
@@ -228,6 +249,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "upload_url": "http://localhost:9090/api/v1/media/upload?media_id=...",
@@ -237,6 +259,7 @@ Content-Type: application/json
 ```
 
 ### **5.2 Upload file trực tiếp**
+
 ```http
 POST /api/v1/media/upload
 Authorization: Bearer <access_token>
@@ -248,6 +271,7 @@ Form Data:
 ```
 
 **Response:**
+
 ```json
 {
   "media_id": 1,
@@ -259,18 +283,21 @@ Form Data:
 ```
 
 ### **5.3 Lấy thông tin media**
+
 ```http
 GET /api/v1/media/{id}
 Authorization: Bearer <access_token>
 ```
 
 ### **5.4 Xóa media**
+
 ```http
 DELETE /api/v1/media/{id}
 Authorization: Bearer <access_token>
 ```
 
 ### **5.5 Truy cập file đã upload**
+
 ```http
 GET /uploads/{filename}
 # Public access, không cần authorization
@@ -281,12 +308,14 @@ GET /uploads/{filename}
 ## **6. 🔔 NOTIFICATION APIs**
 
 ### **6.1 Lấy danh sách thông báo**
+
 ```http
 GET /api/v1/notifications?limit=20&offset=0
 Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 {
   "notifications": [
@@ -310,30 +339,35 @@ Authorization: Bearer <access_token>
 ```
 
 ### **6.2 Lấy thông báo chưa đọc**
+
 ```http
 GET /api/v1/notifications/unread
 Authorization: Bearer <access_token>
 ```
 
 ### **6.3 Đánh dấu thông báo đã đọc**
+
 ```http
 PATCH /api/v1/notifications/{id}/read
 Authorization: Bearer <access_token>
 ```
 
 ### **6.4 Đánh dấu tất cả đã đọc**
+
 ```http
 PATCH /api/v1/notifications/read-all
 Authorization: Bearer <access_token>
 ```
 
 ### **6.5 Lấy cài đặt thông báo**
+
 ```http
 GET /api/v1/notifications/preferences
 Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -351,6 +385,7 @@ Authorization: Bearer <access_token>
 ```
 
 ### **6.6 Cập nhật cài đặt thông báo**
+
 ```http
 PATCH /api/v1/notifications/preferences
 Authorization: Bearer <access_token>
@@ -369,12 +404,14 @@ Content-Type: application/json
 ## **7. 🔍 SEARCH APIs**
 
 ### **7.1 Tìm kiếm tổng hợp**
+
 ```http
 GET /api/v1/search?q=keyword&type=all&limit=20&offset=0
 Authorization: Bearer <access_token>
 ```
 
 **Response:**
+
 ```json
 {
   "query": "keyword",
@@ -411,12 +448,14 @@ Authorization: Bearer <access_token>
 ```
 
 ### **7.2 Tìm kiếm user**
+
 ```http
 GET /api/v1/search/users?q=alice&limit=10&offset=0
 Authorization: Bearer <access_token>
 ```
 
 ### **7.3 Tìm kiếm tin nhắn**
+
 ```http
 GET /api/v1/search/messages?q=hello&conversation_id=1&limit=10&offset=0
 Authorization: Bearer <access_token>
@@ -427,22 +466,24 @@ Authorization: Bearer <access_token>
 ## **8. 🌐 WEBSOCKET Integration**
 
 ### **8.1 Kết nối WebSocket**
+
 ```javascript
 const socket = io('ws://localhost:9090', {
   auth: {
-    token: 'your_jwt_token'
-  }
+    token: 'your_jwt_token',
+  },
 });
 ```
 
 ### **8.2 WebSocket Events**
 
 #### **Tin nhắn:**
+
 ```javascript
 // Gửi tin nhắn
 socket.emit('message_send', {
   room_id: 'conversation_1',
-  message: 'Hello everyone!'
+  message: 'Hello everyone!',
 });
 
 // Nhận tin nhắn mới
@@ -460,6 +501,7 @@ socket.on('typing_start', (userId) => {
 ```
 
 #### **Thông báo:**
+
 ```javascript
 // Nhận thông báo mới
 socket.on('notification_received', (notification) => {
@@ -474,7 +516,7 @@ socket.on('notification_count', (data) => {
 
 // Xác nhận đã đọc thông báo
 socket.emit('notification_ack', {
-  notification_id: 123
+  notification_id: 123,
 });
 
 // Lấy số lượng thông báo chưa đọc
@@ -482,6 +524,7 @@ socket.emit('get_notification_count');
 ```
 
 #### **Presence (Online/Offline):**
+
 ```javascript
 // Join room
 socket.emit('join_room', { room_id: 'conversation_1' });
@@ -504,11 +547,13 @@ socket.on('user_offline', (userId) => {
 ## **9. 🔧 UTILITY APIs**
 
 ### **9.1 Health Check**
+
 ```http
 GET /ping
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true
@@ -516,6 +561,7 @@ GET /ping
 ```
 
 ### **9.2 API Documentation**
+
 ```http
 GET /swagger/index.html
 # Swagger UI documentation
@@ -526,15 +572,16 @@ GET /swagger/index.html
 ## **10. 📱 FRONTEND INTEGRATION GUIDE**
 
 ### **10.1 Authentication Service**
+
 ```javascript
 class AuthService {
   async register(email, username, password) {
     const response = await fetch('/api/v1/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, username, password })
+      body: JSON.stringify({ email, username, password }),
     });
-    
+
     const data = await response.json();
     if (data.access_token) {
       localStorage.setItem('access_token', data.access_token);
@@ -547,9 +594,9 @@ class AuthService {
     const response = await fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
-    
+
     const data = await response.json();
     if (data.access_token) {
       localStorage.setItem('access_token', data.access_token);
@@ -567,7 +614,7 @@ class AuthService {
     const response = await fetch('/api/v1/auth/refresh', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: refreshToken })
+      body: JSON.stringify({ refresh_token: refreshToken }),
     });
 
     const data = await response.json();
@@ -580,8 +627,8 @@ class AuthService {
   getAuthHeaders() {
     const token = localStorage.getItem('access_token');
     return {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     };
   }
 
@@ -593,6 +640,7 @@ class AuthService {
 ```
 
 ### **10.2 API Client**
+
 ```javascript
 class ApiClient {
   constructor(baseUrl = 'http://localhost:9090') {
@@ -604,12 +652,12 @@ class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     const config = {
       headers: this.authService.getAuthHeaders(),
-      ...options
+      ...options,
     };
 
     try {
       const response = await fetch(url, config);
-      
+
       if (response.status === 401) {
         // Token expired, try refresh
         await this.authService.refreshToken();
@@ -628,7 +676,9 @@ class ApiClient {
 
   async handleResponse(response) {
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Network error' }));
+      const error = await response
+        .json()
+        .catch(() => ({ message: 'Network error' }));
       throw new Error(error.message || `HTTP ${response.status}`);
     }
     return response.json();
@@ -636,7 +686,9 @@ class ApiClient {
 
   // Conversations
   async getConversations(limit = 20, offset = 0) {
-    return this.request(`/api/v1/conversations?limit=${limit}&offset=${offset}`);
+    return this.request(
+      `/api/v1/conversations?limit=${limit}&offset=${offset}`
+    );
   }
 
   async getConversation(conversationId) {
@@ -646,39 +698,41 @@ class ApiClient {
   async createDirectConversation(participantId) {
     return this.request('/api/v1/conversations/direct', {
       method: 'POST',
-      body: JSON.stringify({ participant_id: participantId })
+      body: JSON.stringify({ participant_id: participantId }),
     });
   }
 
   async createGroupConversation(name, participantIds) {
     return this.request('/api/v1/conversations/group', {
       method: 'POST',
-      body: JSON.stringify({ name, participant_ids: participantIds })
+      body: JSON.stringify({ name, participant_ids: participantIds }),
     });
   }
 
   // Messages
   async getMessages(conversationId, limit = 50, offset = 0) {
-    return this.request(`/api/v1/conversations/${conversationId}/messages?limit=${limit}&offset=${offset}`);
+    return this.request(
+      `/api/v1/conversations/${conversationId}/messages?limit=${limit}&offset=${offset}`
+    );
   }
 
   async sendMessage(conversationId, content) {
     return this.request(`/api/v1/conversations/${conversationId}/messages`, {
       method: 'POST',
-      body: JSON.stringify({ content })
+      body: JSON.stringify({ content }),
     });
   }
 
   async updateMessage(messageId, content) {
     return this.request(`/api/v1/messages/${messageId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ content })
+      body: JSON.stringify({ content }),
     });
   }
 
   async deleteMessage(messageId) {
     return this.request(`/api/v1/messages/${messageId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
   }
 
@@ -688,7 +742,7 @@ class ApiClient {
       q: query,
       type,
       limit: limit.toString(),
-      offset: offset.toString()
+      offset: offset.toString(),
     });
     return this.request(`/api/v1/search?${params}`);
   }
@@ -697,7 +751,7 @@ class ApiClient {
     const params = new URLSearchParams({
       q: query,
       limit: limit.toString(),
-      offset: offset.toString()
+      offset: offset.toString(),
     });
     return this.request(`/api/v1/search/users?${params}`);
   }
@@ -706,7 +760,7 @@ class ApiClient {
     const params = new URLSearchParams({
       q: query,
       limit: limit.toString(),
-      offset: offset.toString()
+      offset: offset.toString(),
     });
     if (conversationId) {
       params.append('conversation_id', conversationId.toString());
@@ -716,7 +770,9 @@ class ApiClient {
 
   // Notifications
   async getNotifications(limit = 20, offset = 0) {
-    return this.request(`/api/v1/notifications?limit=${limit}&offset=${offset}`);
+    return this.request(
+      `/api/v1/notifications?limit=${limit}&offset=${offset}`
+    );
   }
 
   async getUnreadNotifications() {
@@ -725,13 +781,13 @@ class ApiClient {
 
   async markNotificationAsRead(notificationId) {
     return this.request(`/api/v1/notifications/${notificationId}/read`, {
-      method: 'PATCH'
+      method: 'PATCH',
     });
   }
 
   async markAllNotificationsAsRead() {
     return this.request('/api/v1/notifications/read-all', {
-      method: 'PATCH'
+      method: 'PATCH',
     });
   }
 
@@ -742,7 +798,7 @@ class ApiClient {
   async updateNotificationPreferences(preferences) {
     return this.request('/api/v1/notifications/preferences', {
       method: 'PATCH',
-      body: JSON.stringify(preferences)
+      body: JSON.stringify(preferences),
     });
   }
 
@@ -754,7 +810,7 @@ class ApiClient {
   async updateUserProfile(updates) {
     return this.request('/api/v1/users/profile', {
       method: 'PATCH',
-      body: JSON.stringify(updates)
+      body: JSON.stringify(updates),
     });
   }
 
@@ -765,6 +821,7 @@ class ApiClient {
 ```
 
 ### **10.3 WebSocket Manager**
+
 ```javascript
 class WebSocketManager {
   constructor(apiClient) {
@@ -786,7 +843,7 @@ class WebSocketManager {
     this.socket = io('ws://localhost:9090', {
       auth: { token },
       transports: ['websocket'],
-      upgrade: true
+      upgrade: true,
     });
 
     this.setupEventListeners();
@@ -805,7 +862,7 @@ class WebSocketManager {
       console.log('WebSocket disconnected:', reason);
       this.isConnected = false;
       this.emit('disconnected', reason);
-      
+
       if (reason === 'io server disconnect') {
         // Server initiated disconnect, try to reconnect
         this.handleReconnection();
@@ -846,11 +903,19 @@ class WebSocketManager {
 
     // Typing events
     this.socket.on('typing_start', (data) => {
-      this.emit('userTyping', { userId: data.user_id, typing: true, conversationId: data.conversation_id });
+      this.emit('userTyping', {
+        userId: data.user_id,
+        typing: true,
+        conversationId: data.conversation_id,
+      });
     });
 
     this.socket.on('typing_stop', (data) => {
-      this.emit('userTyping', { userId: data.user_id, typing: false, conversationId: data.conversation_id });
+      this.emit('userTyping', {
+        userId: data.user_id,
+        typing: false,
+        conversationId: data.conversation_id,
+      });
     });
 
     // Presence events
@@ -873,9 +938,11 @@ class WebSocketManager {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
       const delay = Math.pow(2, this.reconnectAttempts) * 1000; // Exponential backoff
-      
-      console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
+
+      console.log(
+        `Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      );
+
       setTimeout(() => {
         this.connect();
       }, delay);
@@ -895,13 +962,15 @@ class WebSocketManager {
 
   off(event, handler) {
     if (this.eventHandlers[event]) {
-      this.eventHandlers[event] = this.eventHandlers[event].filter(h => h !== handler);
+      this.eventHandlers[event] = this.eventHandlers[event].filter(
+        (h) => h !== handler
+      );
     }
   }
 
   emit(event, data) {
     if (this.eventHandlers[event]) {
-      this.eventHandlers[event].forEach(handler => {
+      this.eventHandlers[event].forEach((handler) => {
         try {
           handler(data);
         } catch (error) {
@@ -973,6 +1042,7 @@ class WebSocketManager {
 ```
 
 ### **10.4 File Upload Service**
+
 ```javascript
 class FileUploadService {
   constructor(apiClient) {
@@ -983,14 +1053,22 @@ class FileUploadService {
     // Validate file
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-      throw new Error(`File size ${this.formatFileSize(file.size)} exceeds maximum allowed size ${this.formatFileSize(maxSize)}`);
+      throw new Error(
+        `File size ${this.formatFileSize(
+          file.size
+        )} exceeds maximum allowed size ${this.formatFileSize(maxSize)}`
+      );
     }
 
     const allowedTypes = [
-      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-      'application/pdf', 'text/plain',
-      'application/msword', 
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'application/pdf',
+      'text/plain',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
 
     if (!allowedTypes.includes(file.type)) {
@@ -1028,7 +1106,11 @@ class FileUploadService {
         } else {
           try {
             const error = JSON.parse(xhr.responseText);
-            reject(new Error(error.message || `Upload failed with status ${xhr.status}`));
+            reject(
+              new Error(
+                error.message || `Upload failed with status ${xhr.status}`
+              )
+            );
           } catch {
             reject(new Error(`Upload failed with status ${xhr.status}`));
           }
@@ -1052,14 +1134,17 @@ class FileUploadService {
 
   async uploadWithPresign(file, onProgress = null) {
     // Get presigned URL
-    const presignResponse = await this.apiClient.request('/api/v1/media/presign', {
-      method: 'POST',
-      body: JSON.stringify({
-        filename: file.name,
-        mime_type: file.type,
-        size: file.size
-      })
-    });
+    const presignResponse = await this.apiClient.request(
+      '/api/v1/media/presign',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          filename: file.name,
+          mime_type: file.type,
+          size: file.size,
+        }),
+      }
+    );
 
     // Upload to presigned URL
     const formData = new FormData();
@@ -1120,6 +1205,7 @@ class FileUploadService {
 ```
 
 ### **10.5 Complete Integration Example**
+
 ```javascript
 class ChatterGoApp {
   constructor() {
@@ -1127,13 +1213,13 @@ class ChatterGoApp {
     this.apiClient = new ApiClient();
     this.wsManager = new WebSocketManager(this.apiClient);
     this.fileUploadService = new FileUploadService(this.apiClient);
-    
+
     this.currentUser = null;
     this.currentConversation = null;
     this.conversations = [];
     this.messages = [];
     this.notifications = [];
-    
+
     this.init();
   }
 
@@ -1177,61 +1263,78 @@ class ChatterGoApp {
 
   setupEventListeners() {
     // Login form
-    document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      
-      try {
-        const result = await this.authService.login(
-          formData.get('email'),
-          formData.get('password')
-        );
-        
-        this.currentUser = result.user;
-        this.setupWebSocket();
-        this.loadInitialData();
-        this.showChatInterface();
-      } catch (error) {
-        this.showError('Login failed: ' + error.message);
-      }
-    });
+    document
+      .getElementById('loginForm')
+      ?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        try {
+          const result = await this.authService.login(
+            formData.get('email'),
+            formData.get('password')
+          );
+
+          this.currentUser = result.user;
+          this.setupWebSocket();
+          this.loadInitialData();
+          this.showChatInterface();
+        } catch (error) {
+          this.showError('Login failed: ' + error.message);
+        }
+      });
 
     // Send message form
-    document.getElementById('messageForm')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const messageInput = document.getElementById('messageInput');
-      const content = messageInput.value.trim();
-      
-      if (content && this.currentConversation) {
-        try {
-          await this.apiClient.sendMessage(this.currentConversation.id, content);
-          messageInput.value = '';
-        } catch (error) {
-          this.showError('Failed to send message: ' + error.message);
+    document
+      .getElementById('messageForm')
+      ?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const messageInput = document.getElementById('messageInput');
+        const content = messageInput.value.trim();
+
+        if (content && this.currentConversation) {
+          try {
+            await this.apiClient.sendMessage(
+              this.currentConversation.id,
+              content
+            );
+            messageInput.value = '';
+          } catch (error) {
+            this.showError('Failed to send message: ' + error.message);
+          }
         }
-      }
-    });
+      });
 
     // File upload
-    document.getElementById('fileInput')?.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        try {
-          const result = await this.fileUploadService.uploadFile(file, null, (progress) => {
-            this.updateUploadProgress(progress);
-          });
-          
-          // Send message with file attachment
-          const content = `📎 ${file.name}`;
-          await this.apiClient.sendMessage(this.currentConversation.id, content);
-        } catch (error) {
-          this.showError('File upload failed: ' + error.message);
+    document
+      .getElementById('fileInput')
+      ?.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          try {
+            const result = await this.fileUploadService.uploadFile(
+              file,
+              null,
+              (progress) => {
+                this.updateUploadProgress(progress);
+              }
+            );
+
+            // Send message with file attachment
+            const content = `📎 ${file.name}`;
+            await this.apiClient.sendMessage(
+              this.currentConversation.id,
+              content
+            );
+          } catch (error) {
+            this.showError('File upload failed: ' + error.message);
+          }
         }
-      }
-    });
+      });
 
     // Search
-    document.getElementById('searchInput')?.addEventListener('input', 
+    document.getElementById('searchInput')?.addEventListener(
+      'input',
       this.debounce(async (e) => {
         const query = e.target.value.trim();
         if (query.length >= 2) {
@@ -1266,7 +1369,10 @@ class ChatterGoApp {
   }
 
   handleNewMessage(message) {
-    if (this.currentConversation && message.conversation_id === this.currentConversation.id) {
+    if (
+      this.currentConversation &&
+      message.conversation_id === this.currentConversation.id
+    ) {
       this.messages.push(message);
       this.displayMessage(message);
       this.scrollToBottom();
@@ -1279,12 +1385,12 @@ class ChatterGoApp {
   handleNewNotification(notification) {
     this.notifications.unshift(notification);
     this.displayNotification(notification);
-    
+
     // Show browser notification if permission granted
     if (Notification.permission === 'granted') {
       new Notification(notification.title, {
         body: notification.message,
-        icon: '/favicon.ico'
+        icon: '/favicon.ico',
       });
     }
   }
@@ -1308,10 +1414,18 @@ class ChatterGoApp {
   }
 
   // UI update methods would go here...
-  displayConversations() { /* Implementation */ }
-  displayMessage(message) { /* Implementation */ }
-  displaySearchResults(results) { /* Implementation */ }
-  updateNotificationBadge(count) { /* Implementation */ }
+  displayConversations() {
+    /* Implementation */
+  }
+  displayMessage(message) {
+    /* Implementation */
+  }
+  displaySearchResults(results) {
+    /* Implementation */
+  }
+  updateNotificationBadge(count) {
+    /* Implementation */
+  }
   // ... etc
 }
 
@@ -1328,6 +1442,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ### **Frontend cần implement:**
 
 #### **✅ Authentication:**
+
 - [ ] Login/Register forms
 - [ ] Token management (access + refresh)
 - [ ] Auto-refresh expired tokens
@@ -1335,6 +1450,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - [ ] Protected routes
 
 #### **✅ Chat Interface:**
+
 - [ ] Conversation list với real-time updates
 - [ ] Message display với sender info và timestamps
 - [ ] Send message form với validation
@@ -1344,6 +1460,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - [ ] Message pagination (load more)
 
 #### **✅ Notifications:**
+
 - [ ] Notification badge/counter
 - [ ] Notification dropdown/panel
 - [ ] Mark as read functionality
@@ -1353,6 +1470,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - [ ] Do Not Disturb settings
 
 #### **✅ Search:**
+
 - [ ] Search input với debouncing
 - [ ] Search results display (users, messages, conversations)
 - [ ] Filter by type dropdown
@@ -1361,6 +1479,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - [ ] Highlight search terms in results
 
 #### **✅ WebSocket:**
+
 - [ ] Connection management
 - [ ] Event listeners setup
 - [ ] Reconnection logic với exponential backoff
@@ -1368,6 +1487,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - [ ] Connection status indicator
 
 #### **✅ File Handling:**
+
 - [ ] File picker/drag-drop interface
 - [ ] Upload progress indicator
 - [ ] File preview (images)
@@ -1376,6 +1496,7 @@ document.addEventListener('DOMContentLoaded', () => {
 - [ ] Multiple file upload support
 
 #### **✅ UI/UX:**
+
 - [ ] Responsive design
 - [ ] Loading states
 - [ ] Error messages
@@ -1388,15 +1509,17 @@ document.addEventListener('DOMContentLoaded', () => {
 ## **12. 🔒 SECURITY & ERROR HANDLING**
 
 ### **Headers cần thiết:**
+
 ```javascript
 const headers = {
-  'Authorization': `Bearer ${access_token}`,
+  Authorization: `Bearer ${access_token}`,
   'Content-Type': 'application/json',
-  'Accept': 'application/json'
+  Accept: 'application/json',
 };
 ```
 
 ### **Error Handling Pattern:**
+
 ```javascript
 async function handleApiResponse(response) {
   if (response.status === 401) {
@@ -1406,35 +1529,38 @@ async function handleApiResponse(response) {
     window.location.href = '/login';
     return;
   }
-  
+
   if (response.status === 403) {
     throw new Error('Access denied');
   }
-  
+
   if (response.status >= 500) {
     throw new Error('Server error. Please try again later.');
   }
-  
+
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Unknown error' }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: 'Unknown error' }));
     throw new Error(error.message || `HTTP ${response.status}`);
   }
-  
+
   return response.json();
 }
 ```
 
 ### **Input Validation:**
+
 ```javascript
 function validateMessage(content) {
   if (!content || content.trim().length === 0) {
     throw new Error('Message cannot be empty');
   }
-  
+
   if (content.length > 1000) {
     throw new Error('Message too long (max 1000 characters)');
   }
-  
+
   return content.trim();
 }
 
@@ -1448,6 +1574,7 @@ function validateEmail(email) {
 ```
 
 ### **Rate Limiting:**
+
 ```javascript
 class RateLimiter {
   constructor(maxRequests = 100, windowMs = 60000) {
@@ -1458,12 +1585,12 @@ class RateLimiter {
 
   canMakeRequest() {
     const now = Date.now();
-    this.requests = this.requests.filter(time => now - time < this.windowMs);
-    
+    this.requests = this.requests.filter((time) => now - time < this.windowMs);
+
     if (this.requests.length >= this.maxRequests) {
       return false;
     }
-    
+
     this.requests.push(now);
     return true;
   }
@@ -1475,16 +1602,18 @@ class RateLimiter {
 ## **13. 🚀 DEPLOYMENT NOTES**
 
 ### **Environment Variables:**
+
 ```javascript
 const config = {
   API_BASE_URL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:9090',
   WS_URL: process.env.REACT_APP_WS_URL || 'ws://localhost:9090',
   MAX_FILE_SIZE: process.env.REACT_APP_MAX_FILE_SIZE || 10485760, // 10MB
-  ENABLE_NOTIFICATIONS: process.env.REACT_APP_ENABLE_NOTIFICATIONS !== 'false'
+  ENABLE_NOTIFICATIONS: process.env.REACT_APP_ENABLE_NOTIFICATIONS !== 'false',
 };
 ```
 
 ### **Production Considerations:**
+
 - **HTTPS**: Sử dụng HTTPS cho production
 - **WSS**: WebSocket Secure cho production
 - **CDN**: Serve static files qua CDN
@@ -1500,25 +1629,30 @@ const config = {
 ### **Common Issues:**
 
 #### **401 Unauthorized:**
+
 - Check JWT token validity
 - Ensure proper Authorization header format
 - Verify token hasn't expired
 
 #### **CORS Errors:**
+
 - Backend đã cấu hình CORS cho localhost:3000, 5173, 8080
 - Kiểm tra Origin header
 
 #### **WebSocket Connection Failed:**
+
 - Verify JWT token
 - Check network connectivity
 - Ensure WebSocket server is running
 
 #### **File Upload Failed:**
+
 - Check file size limits (10MB)
 - Verify file type is allowed
 - Ensure proper form-data encoding
 
 ### **Debug Tools:**
+
 ```javascript
 // Enable debug logging
 localStorage.setItem('debug', 'chattergo:*');

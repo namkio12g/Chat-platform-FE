@@ -1,14 +1,20 @@
-import { startTransition, useState } from 'react';
+import { useState } from 'react';
 import { User, Users, Settings, DoorOpen } from 'lucide-react';
 import '../styles.scss';
 import { logoutUser } from '@/store/thunks/authThunks';
-import { useAppDispatch } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { logout } from '@/store/slices/authSlice';
+import { selectUser } from '@/store/selectors/authSelectors';
+import { ProfileUpdateModal } from './ProfileUpdateModal';
+import { api } from '@/services/api';
+import { setUser } from '@/store/slices/authSlice';
+import { getAvatarUrl } from '@/constants/avatars';
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const currentUser = useAppSelector(selectUser);
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
@@ -23,6 +29,35 @@ export const Sidebar = () => {
       toast.error('Failed to logout');
     }
     navigate('/login');
+  };
+
+  const handleProfileUpdate = async (name: string, avatarFile: File | null) => {
+    let updatedUser = currentUser;
+
+    // Step 1: Upload avatar if provided
+    if (avatarFile) {
+      updatedUser = await api.uploadAvatar(avatarFile);
+      dispatch(setUser(updatedUser));
+      // Update localStorage
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      toast.success('Avatar updated successfully');
+    }
+
+    // Step 2: Update username if changed
+    if (name && name.trim() !== currentUser?.userName) {
+      updatedUser = await api.updateProfile(name.trim());
+      dispatch(setUser(updatedUser));
+      // Update localStorage
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      if (!avatarFile) {
+        toast.success('Profile updated successfully');
+      }
+    }
+
+    // If both avatar and name were updated, show a combined message
+    if (avatarFile && name && name.trim() !== currentUser?.userName) {
+      toast.success('Profile and avatar updated successfully');
+    }
   };
   return (
     <aside
@@ -64,9 +99,23 @@ export const Sidebar = () => {
         </span>
       </div>
       <div
-        className={`sidebar-avatar mt-auto rounded-full bg-slate-300 ${
+        className={`sidebar-avatar mt-auto rounded-full bg-slate-300 cursor-pointer hover:opacity-80 transition-opacity ${
           isOpen ? 'expanded' : 'collapsed'
         }`}
+        onClick={() => setIsProfileModalOpen(true)}
+        style={{
+          backgroundImage: `url(${getAvatarUrl(currentUser?.avatar)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+        title='Click to update profile'
+      />
+
+      {/* Profile Update Modal */}
+      <ProfileUpdateModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onSave={handleProfileUpdate}
       />
     </aside>
   );

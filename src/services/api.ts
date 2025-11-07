@@ -84,6 +84,7 @@ export interface SignupCredentials {
 export interface AuthResponse {
   user: User;
   token: string;
+  refresh_token: string;
   expiresIn: number;
 }
 
@@ -107,6 +108,7 @@ export const api = {
     return {
       user: response.data.data.user,
       token: response.data.data.access_token,
+      refresh_token: response.data.data.refresh_token,
       expiresIn: 3600, // 1 hour
     };
   },
@@ -129,6 +131,7 @@ export const api = {
     return {
       user: response.data.data.user,
       token: response.data.data.access_token,
+      refresh_token: response.data.data.refresh_token,
       expiresIn: 3600,
     };
   },
@@ -268,6 +271,237 @@ export const api = {
         friends as Array<{ friendId: number; conversationId: number }>
       ).filter((f) => f.conversationId === conversation.id),
     }));
+  },
+
+  // Get all conversations for the logged-in user
+  // Based on API Integration Guide section 3.3
+  // GET /api/v1/conversations?limit=20&offset=0
+  getConversations: async (limit: number = 20, offset: number = 0) => {
+    const response = await axiosClient.get<
+      ApiResponse<{
+        conversations: Array<{
+          id: number;
+          type: 'direct' | 'group';
+          name: string | null;
+          members: Array<{
+            user_id: number;
+            role: string;
+            user: {
+              id: number;
+              username: string;
+              avatar_url: string;
+            };
+          }>;
+          created_at: string;
+        }>;
+        total: number;
+      }>
+    >(`/conversations`, {
+      params: { limit, offset },
+    });
+    return response.data.data;
+  },
+
+  // Get a specific conversation by ID
+  // Based on API Integration Guide section 3.4
+  // GET /api/v1/conversations/{id}
+  getConversation: async (conversationId: number) => {
+    const response = await axiosClient.get<
+      ApiResponse<{
+        id: number;
+        type: 'direct' | 'group';
+        name: string | null;
+        members: Array<{
+          user_id: number;
+          role: string;
+          user: {
+            id: number;
+            username: string;
+          };
+        }>;
+        created_at: string;
+      }>
+    >(`/conversations/${conversationId}`);
+    return response.data.data;
+  },
+
+  // Search users - Based on API Integration Guide section 7.2
+  searchUsers: async (
+    query: string,
+    limit: number = 20,
+    offset: number = 0
+  ) => {
+    const response = await axiosClient.get<
+      ApiResponse<{
+        users: Array<{ id: number; username: string; email: string }>;
+      }>
+    >(`/search/users`, {
+      params: { q: query, limit, offset },
+    });
+    return response.data.data;
+  },
+
+  // Create direct conversation - Based on API Integration Guide section 3.1
+  // Note: Backend expects recipient_id field name (lowercase with underscore)
+  createDirectConversation: async (recipientId: number) => {
+    // Validate recipientId
+    if (!recipientId || recipientId <= 0) {
+      throw new Error('Invalid recipient ID');
+    }
+
+    // Prepare request body with exact field name expected by Go backend
+    const requestBody = {
+      recipient_id: recipientId,
+    };
+
+    const response = await axiosClient.post<
+      ApiResponse<{
+        id: number;
+        type: string;
+        name: string | null;
+        members: Array<{
+          user_id: number;
+          role: string;
+          user: {
+            id: number;
+            username: string;
+          };
+        }>;
+        created_at: string;
+      }>
+    >(`/conversations/direct`, requestBody);
+
+    return response.data.data;
+  },
+
+  // Get messages for a conversation - Based on API Integration Guide section 4.2
+  // GET /api/v1/conversations/{id}/messages?limit=50&offset=0
+  getConversationMessages: async (
+    conversationId: number,
+    limit: number = 10,
+    offset: number = 0
+  ) => {
+    const response = await axiosClient.get<
+      ApiResponse<{
+        messages: Array<{
+          id: number;
+          conversation_id: number;
+          sender_id: number;
+          content: string;
+          created_at: string;
+          sender: {
+            id: number;
+            username: string;
+          };
+          media: Array<{
+            id: number;
+            url: string;
+            filename: string;
+            mime_type: string;
+          }>;
+        }>;
+        total: number;
+      }>
+    >(`/conversations/${conversationId}/messages`, {
+      params: { limit, offset },
+    });
+    return response.data.data;
+  },
+
+  // Media upload
+  uploadMedia: async (
+    file: File
+  ): Promise<{
+    media_id: number;
+    url: string;
+    filename: string;
+    mime_type: string;
+    size: number;
+  }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axiosClient.post<
+      ApiResponse<{
+        media_id: number;
+        url: string;
+        filename: string;
+        mime_type: string;
+        size: number;
+      }>
+    >(`/media/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.data;
+  },
+
+  // Upload/Update Avatar
+  // POST /api/v1/users/profile/avatar
+  uploadAvatar: async (file: File): Promise<User> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const response = await axiosClient.post<
+      ApiResponse<{
+        id: number;
+        email: string;
+        username: string;
+        avatar_url: string;
+        is_active: boolean;
+        created_at: string;
+        updated_at: string;
+      }>
+    >(`/users/profile/avatar`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // Map API response to User interface
+    const apiUser = response.data.data;
+    return {
+      id: apiUser.id,
+      userName: apiUser.username,
+      email: apiUser.email,
+      avatar: apiUser.avatar_url,
+      status: 'online' as const,
+      isActive: apiUser.is_active,
+      createdAt: apiUser.created_at,
+      updatedAt: apiUser.updated_at,
+    };
+  },
+
+  // Update Profile (name/username)
+  // PATCH /api/v1/users/profile
+  updateProfile: async (username: string): Promise<User> => {
+    const response = await axiosClient.patch<
+      ApiResponse<{
+        id: number;
+        email: string;
+        username: string;
+        avatar_url?: string;
+        is_active: boolean;
+        created_at: string;
+        updated_at: string;
+      }>
+    >(`/users/profile`, {
+      username,
+    });
+
+    // Map API response to User interface
+    const apiUser = response.data.data;
+    return {
+      id: apiUser.id,
+      userName: apiUser.username,
+      email: apiUser.email,
+      avatar: apiUser.avatar_url || '',
+      status: 'online' as const,
+      isActive: apiUser.is_active,
+      createdAt: apiUser.created_at,
+      updatedAt: apiUser.updated_at,
+    };
   },
 };
 

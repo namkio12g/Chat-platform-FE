@@ -6,6 +6,30 @@ import type {
   Notification,
 } from '@/services/api';
 
+export interface ConversationMessage {
+  id: number;
+  conversation_id: number;
+  sender_id: number;
+  content: string;
+  created_at: string;
+  sender: {
+    id: number;
+    username: string;
+  };
+  media: Array<{
+    id: number;
+    url: string;
+    filename: string;
+    mime_type: string;
+  }>;
+}
+
+interface ConversationPagination {
+  offset: number;
+  total: number;
+  hasMore: boolean;
+}
+
 interface ChatState {
   channels: Channel[];
   messages: { [channelId: number]: Message[] };
@@ -13,6 +37,28 @@ interface ChatState {
   notifications: Notification[];
   currentChannel: number | null;
   currentDirectMessage: number | null;
+  // Conversation messages
+  conversationMessages: { [conversationId: number]: ConversationMessage[] };
+  conversationPagination: {
+    [conversationId: number]: ConversationPagination;
+  };
+  currentConversation: number | null;
+  conversationDetails: {
+    [conversationId: number]: {
+      id: number;
+      type: 'direct' | 'group';
+      name: string | null;
+      members: Array<{
+        user_id: number;
+        role: string;
+        user: {
+          id: number;
+          username: string;
+        };
+      }>;
+      created_at: string;
+    };
+  };
   isLoading: boolean;
   error: string | null;
 }
@@ -24,6 +70,10 @@ const initialState: ChatState = {
   notifications: [],
   currentChannel: null,
   currentDirectMessage: null,
+  conversationMessages: {},
+  conversationPagination: {},
+  currentConversation: null,
+  conversationDetails: {},
   isLoading: false,
   error: null,
 };
@@ -139,6 +189,97 @@ const chatSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+
+    // Conversation messages
+    setConversationMessages: (
+      state,
+      action: PayloadAction<{
+        conversationId: number;
+        messages: ConversationMessage[];
+        total: number;
+        offset: number;
+      }>
+    ) => {
+      const { conversationId, messages, total, offset } = action.payload;
+      state.conversationMessages[conversationId] = messages;
+      state.conversationPagination[conversationId] = {
+        offset,
+        total,
+        hasMore: offset + messages.length < total,
+      };
+    },
+
+    prependConversationMessages: (
+      state,
+      action: PayloadAction<{
+        conversationId: number;
+        messages: ConversationMessage[];
+        total: number;
+        offset: number;
+      }>
+    ) => {
+      const { conversationId, messages, total, offset } = action.payload;
+      const existingMessages =
+        state.conversationMessages[conversationId] || [];
+      // Prepend new messages to the beginning (older messages)
+      state.conversationMessages[conversationId] = [
+        ...messages,
+        ...existingMessages,
+      ];
+      state.conversationPagination[conversationId] = {
+        offset,
+        total,
+        hasMore: offset + messages.length < total,
+      };
+    },
+
+    addConversationMessage: (
+      state,
+      action: PayloadAction<ConversationMessage>
+    ) => {
+      const conversationId = action.payload.conversation_id;
+      if (!state.conversationMessages[conversationId]) {
+        state.conversationMessages[conversationId] = [];
+      }
+      // Add to the end (newest messages)
+      state.conversationMessages[conversationId].push(action.payload);
+    },
+
+    setCurrentConversation: (
+      state,
+      action: PayloadAction<number | null>
+    ) => {
+      state.currentConversation = action.payload;
+    },
+
+    clearConversationMessages: (
+      state,
+      action: PayloadAction<number>
+    ) => {
+      const conversationId = action.payload;
+      delete state.conversationMessages[conversationId];
+      delete state.conversationPagination[conversationId];
+    },
+
+    setConversationDetails: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        type: 'direct' | 'group';
+        name: string | null;
+        members: Array<{
+          user_id: number;
+          role: string;
+          user: {
+            id: number;
+            username: string;
+          };
+        }>;
+        created_at: string;
+      }>
+    ) => {
+      state.conversationDetails[action.payload.id] = action.payload;
+    },
   },
 });
 
@@ -160,6 +301,12 @@ export const {
   clearNotifications,
   setCurrentChannel,
   setCurrentDirectMessage,
+  setConversationMessages,
+  prependConversationMessages,
+  addConversationMessage,
+  setCurrentConversation,
+  clearConversationMessages,
+  setConversationDetails,
   setLoading,
   setError,
   clearError,

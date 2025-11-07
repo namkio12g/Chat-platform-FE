@@ -7,6 +7,31 @@ export const selectChannels = (state: RootState) => state.chat.channels;
 export const selectMessages = (state: RootState) => state.chat.messages;
 export const selectDirectMessages = (state: RootState) =>
   state.chat.directMessages;
+
+// Conversation selectors
+export const selectCurrentConversation = (state: RootState) =>
+  state.chat.currentConversation;
+export const selectConversationMessages = (state: RootState) =>
+  state.chat.conversationMessages;
+export const selectConversationPagination = (state: RootState) =>
+  state.chat.conversationPagination;
+export const selectConversationDetails = (state: RootState) =>
+  state.chat.conversationDetails;
+
+// Select messages for a specific conversation
+export const selectMessagesByConversationId = (conversationId: number) =>
+  createSelector(
+    [selectConversationMessages],
+    (messages) => messages[conversationId] || []
+  );
+
+// Select pagination for a specific conversation
+export const selectPaginationByConversationId = (conversationId: number) =>
+  createSelector(
+    [selectConversationPagination],
+    (pagination) =>
+      pagination[conversationId] || { offset: 0, total: 0, hasMore: false }
+  );
 export const selectNotifications = (state: RootState) =>
   state.chat.notifications;
 export const selectCurrentChannel = (state: RootState) =>

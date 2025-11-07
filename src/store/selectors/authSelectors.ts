@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../index';
+import { getAvatarUrl } from '@/constants/avatars';
 
 // Basic selectors
 export const selectAuth = (state: RootState) => state.auth;
@@ -18,7 +19,7 @@ export const selectUserDisplayName = createSelector(
 
 export const selectUserAvatar = createSelector(
   [selectUser],
-  (user) => user?.avatar || ''
+  (user) => getAvatarUrl(user?.avatar)
 );
 
 export const selectUserStatus = createSelector(

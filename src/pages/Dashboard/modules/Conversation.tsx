@@ -12,6 +12,7 @@ import {
   clearConversationMessages,
   addConversationMessage,
   setConversationDetails,
+  setCurrentConversation,
 } from '../../../store/slices/chatSlice';
 import { api } from '../../../services/api';
 import type { ConversationMessage } from '../../../store/slices/chatSlice';
@@ -403,6 +404,59 @@ function MessageList({ conversationId }: { conversationId: number | null }) {
     };
   }, [conversationId]);
 
+  // Helper function to show browser notification
+  const showBrowserNotification = useCallback(
+    (title: string, body: string, conversationId?: number) => {
+      // Check if browser supports notifications
+      if (!('Notification' in window)) {
+        console.log('🔔 Browser does not support notifications');
+        return;
+      }
+
+      // Check if permission is granted
+      if (Notification.permission === 'granted') {
+        const notification = new Notification(title, {
+          body,
+          icon: '/favicon.ico',
+          tag: conversationId ? `conv-${conversationId}` : undefined,
+          requireInteraction: false,
+        });
+
+        // Auto-close notification after 5 seconds
+        setTimeout(() => {
+          notification.close();
+        }, 5000);
+
+        // Handle notification click
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+          // Optionally navigate to conversation if conversationId is provided
+          if (conversationId) {
+            dispatch(setCurrentConversation(conversationId));
+          }
+        };
+      } else if (Notification.permission === 'default') {
+        // Request permission
+        Notification.requestPermission().then((permission) => {
+          if (permission === 'granted') {
+            showBrowserNotification(title, body, conversationId);
+          }
+        });
+      }
+    },
+    [dispatch]
+  );
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch((err) => {
+        console.error('Failed to request notification permission:', err);
+      });
+    }
+  }, []);
+
   // Setup WebSocket listeners for incoming messages
   useEffect(() => {
     const handleNewMessage = (data: unknown) => {
@@ -420,6 +474,28 @@ function MessageList({ conversationId }: { conversationId: number | null }) {
         createdAt: message.created_at,
         fullMessage: message,
       });
+
+      // Check if message is from a different conversation or tab is not active
+      const isDifferentConversation =
+        message.conversation_id !== conversationId;
+      const isTabHidden = document.hidden || !document.hasFocus();
+
+      // Show notification if message is from different conversation or tab is not active
+      if (isDifferentConversation || isTabHidden) {
+        const senderName =
+          message.sender?.username || `User ${message.sender_id}`;
+        const messagePreview = message.content
+          ? message.content.substring(0, 50)
+          : message.media && message.media.length > 0
+          ? '📷 Sent an image'
+          : 'Sent a message';
+
+        showBrowserNotification(
+          senderName,
+          messagePreview,
+          message.conversation_id
+        );
+      }
 
       // Only add message if it belongs to the current conversation
       if (message && message.conversation_id === conversationId) {
@@ -483,7 +559,45 @@ function MessageList({ conversationId }: { conversationId: number | null }) {
     return () => {
       websocketManager.off('newMessage', handleNewMessage);
     };
-  }, [conversationId, dispatch]);
+  }, [conversationId, dispatch, showBrowserNotification]);
+
+  // Setup WebSocket listener for notification_received events
+  useEffect(() => {
+    const handleNotificationReceived = (data: unknown) => {
+      const notification = data as {
+        id: number;
+        type: string;
+        title: string;
+        message: string;
+        conversation_id?: number;
+        message_id?: number;
+      };
+
+      console.log('🔔 Notification received:', notification);
+
+      // Show browser notification
+      if (notification.title && notification.message) {
+        const isTabHidden = document.hidden || !document.hasFocus();
+        const isCurrentConversation =
+          notification.conversation_id === conversationId;
+
+        // Show notification if tab is hidden or it's not the current conversation
+        if (isTabHidden || !isCurrentConversation) {
+          showBrowserNotification(
+            notification.title,
+            notification.message,
+            notification.conversation_id
+          );
+        }
+      }
+    };
+
+    websocketManager.on('newNotification', handleNotificationReceived);
+
+    return () => {
+      websocketManager.off('newNotification', handleNotificationReceived);
+    };
+  }, [conversationId, showBrowserNotification]);
 
   // Join/leave room when conversation changes
   useEffect(() => {

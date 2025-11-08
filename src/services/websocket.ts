@@ -197,8 +197,20 @@ class WebSocketManager {
         break;
 
       case 'notification_count': {
-        const countData = payload as { unread_count?: number };
+        const countData = payload as { unread_count?: number; user_id?: number };
         this.emit('notificationCountUpdate', countData.unread_count || 0);
+        break;
+      }
+
+      case 'notification_read': {
+        console.log('✅ Notification read:', payload);
+        this.emit('notificationRead', payload);
+        break;
+      }
+
+      case 'mark_all_read_success': {
+        console.log('✅ All notifications marked as read');
+        this.emit('markAllReadSuccess', payload);
         break;
       }
 

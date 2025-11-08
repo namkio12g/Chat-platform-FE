@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { User, Users, Settings, DoorOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Users, Settings, DoorOpen, Bell } from 'lucide-react';
 import '../styles.scss';
 import { logoutUser } from '@/store/thunks/authThunks';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -7,13 +7,18 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { selectUser } from '@/store/selectors/authSelectors';
 import { ProfileUpdateModal } from './ProfileUpdateModal';
+import { NotificationModal } from './NotificationModal';
 import { api } from '@/services/api';
 import { setUser } from '@/store/slices/authSlice';
 import { getAvatarUrl } from '@/constants/avatars';
+import websocketManager from '@/services/websocket';
+import { setCurrentConversation } from '@/store/slices/chatSlice';
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const currentUser = useAppSelector(selectUser);
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -30,6 +35,38 @@ export const Sidebar = () => {
     }
     navigate('/login');
   };
+
+  // Load unread notification count
+  useEffect(() => {
+    const loadUnreadCount = async () => {
+      try {
+        const result = await api.getUnreadNotifications();
+        setUnreadCount(result.count);
+      } catch (error) {
+        console.error('Failed to load unread count:', error);
+      }
+    };
+
+    loadUnreadCount();
+    websocketManager.requestNotificationCount();
+
+    // Listen for notification count updates
+    const handleNotificationCountUpdate = (count: unknown) => {
+      setUnreadCount(count as number);
+    };
+
+    const handleNewNotification = () => {
+      setUnreadCount((prev) => prev + 1);
+    };
+
+    websocketManager.on('notificationCountUpdate', handleNotificationCountUpdate);
+    websocketManager.on('newNotification', handleNewNotification);
+
+    return () => {
+      websocketManager.off('notificationCountUpdate', handleNotificationCountUpdate);
+      websocketManager.off('newNotification', handleNewNotification);
+    };
+  }, []);
 
   const handleProfileUpdate = async (name: string, avatarFile: File | null) => {
     let updatedUser = currentUser;
@@ -58,6 +95,10 @@ export const Sidebar = () => {
     if (avatarFile && name && name.trim() !== currentUser?.userName) {
       toast.success('Profile and avatar updated successfully');
     }
+  };
+
+  const handleNotificationClick = (conversationId: number) => {
+    dispatch(setCurrentConversation(conversationId));
   };
   return (
     <aside
@@ -98,6 +139,21 @@ export const Sidebar = () => {
           Logout
         </span>
       </div>
+      {/* Notification Icon */}
+      <div
+        className='relative cursor-pointer hover:opacity-80 transition-opacity'
+        onClick={() => setIsNotificationModalOpen(true)}
+        title='Notifications'
+      >
+        <Bell className='w-6 h-6 text-slate-600' />
+        {unreadCount > 0 && (
+          <span className='absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-xs font-medium flex items-center justify-center'>
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
+      </div>
+
+      {/* Avatar */}
       <div
         className={`sidebar-avatar mt-auto rounded-full bg-slate-300 cursor-pointer hover:opacity-80 transition-opacity ${
           isOpen ? 'expanded' : 'collapsed'
@@ -116,6 +172,13 @@ export const Sidebar = () => {
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
         onSave={handleProfileUpdate}
+      />
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
+        onNotificationClick={handleNotificationClick}
       />
     </aside>
   );

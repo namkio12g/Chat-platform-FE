@@ -309,7 +309,7 @@ export const ThreadList = () => {
             >
               <div className='w-10 h-10 rounded-full bg-slate-200 relative flex-shrink-0'>
                 <img
-                  src={getAvatarUrl(item`.avatarUrl`)}
+                  src={getAvatarUrl(item.avatarUrl)}
                   alt={item.name}
                   className='w-full h-full rounded-full object-cover'
                 />

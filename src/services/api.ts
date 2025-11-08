@@ -223,19 +223,105 @@ export const api = {
   },
 
   // Notifications
-  getNotifications: async (userId: number): Promise<Notification[]> => {
-    const { data } = await axiosClient.get<Notification[]>(`/notifications`, {
-      params: { userId, _sort: 'timestamp', _order: 'desc' },
+  // GET /api/v1/notifications?limit=20&offset=0
+  getNotifications: async (
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<{
+    notifications: Array<{
+      id: number;
+      user_id: number;
+      type: string;
+      title: string;
+      message: string;
+      data: string;
+      status: 'unread' | 'read';
+      conversation_id?: number;
+      message_id?: number;
+      created_at: string;
+      updated_at: string;
+    }>;
+    total: number;
+    limit: number;
+    offset: number;
+  }> => {
+    const response = await axiosClient.get<
+      ApiResponse<{
+        notifications: Array<{
+          id: number;
+          user_id: number;
+          type: string;
+          title: string;
+          message: string;
+          data: string;
+          status: 'unread' | 'read';
+          conversation_id?: number;
+          message_id?: number;
+          created_at: string;
+          updated_at: string;
+        }>;
+        total: number;
+        limit: number;
+        offset: number;
+      }>
+    >(`/notifications`, {
+      params: { limit, offset },
     });
-    return data;
+    return response.data.data;
   },
 
-  markNotificationAsRead: async (id: number): Promise<Notification> => {
-    const { data } = await axiosClient.patch<Notification>(
-      `/notifications/${id}`,
-      { isRead: true }
+  // GET /api/v1/notifications/unread
+  getUnreadNotifications: async (): Promise<{
+    notifications: Array<{
+      id: number;
+      user_id: number;
+      type: string;
+      title: string;
+      message: string;
+      status: 'unread' | 'read';
+      conversation_id?: number;
+      message_id?: number;
+      created_at: string;
+    }>;
+    count: number;
+  }> => {
+    const response = await axiosClient.get<
+      ApiResponse<{
+        notifications: Array<{
+          id: number;
+          user_id: number;
+          type: string;
+          title: string;
+          message: string;
+          status: 'unread' | 'read';
+          conversation_id?: number;
+          message_id?: number;
+          created_at: string;
+        }>;
+        count: number;
+      }>
+    >(`/notifications/unread`);
+    return response.data.data;
+  },
+
+  // PATCH /api/v1/notifications/:id/read
+  markNotificationAsRead: async (notificationId: number): Promise<{
+    message: string;
+  }> => {
+    const response = await axiosClient.patch<ApiResponse<{ message: string }>>(
+      `/notifications/${notificationId}/read`
     );
-    return data;
+    return response.data.data;
+  },
+
+  // PATCH /api/v1/notifications/read-all
+  markAllNotificationsAsRead: async (): Promise<{
+    message: string;
+  }> => {
+    const response = await axiosClient.patch<ApiResponse<{ message: string }>>(
+      `/notifications/read-all`
+    );
+    return response.data.data;
   },
 
   // Settings

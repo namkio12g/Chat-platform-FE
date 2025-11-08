@@ -25,6 +25,7 @@ function Topbar({ conversationId }: { conversationId: number | null }) {
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [isReconnecting, setIsReconnecting] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<Set<number>>(new Set());
 
   // Get conversation details
   const conversation = conversationId
@@ -98,6 +99,59 @@ function Topbar({ conversationId }: { conversationId: number | null }) {
     };
   }, []);
 
+  // Setup WebSocket listeners for typing status
+  useEffect(() => {
+    if (!conversationId) {
+      setTypingUsers(new Set());
+      return;
+    }
+
+    const handleUserTyping = (data: unknown) => {
+      const payload = data as { userId: number; typing: boolean };
+      const userId = payload.userId;
+
+      console.log('⌨️ Received typing event:', {
+        userId,
+        typing: payload.typing,
+        currentUserId: currentUser?.id,
+      });
+
+      // Ignore typing events from current user
+      if (userId === currentUser?.id) {
+        console.log('⌨️ Ignoring own typing event');
+        return;
+      }
+
+      if (payload.typing) {
+        console.log('⌨️ Adding user to typing list:', userId);
+        setTypingUsers((prev) => {
+          const updated = new Set(prev);
+          updated.add(userId);
+          console.log('⌨️ Current typing users:', Array.from(updated));
+          return updated;
+        });
+      } else {
+        console.log('⌨️ Removing user from typing list:', userId);
+        setTypingUsers((prev) => {
+          const next = new Set(prev);
+          next.delete(userId);
+          console.log(
+            '⌨️ Current typing users after remove:',
+            Array.from(next)
+          );
+          return next;
+        });
+      }
+    };
+
+    websocketManager.on('userTyping', handleUserTyping);
+
+    return () => {
+      websocketManager.off('userTyping', handleUserTyping);
+      setTypingUsers(new Set());
+    };
+  }, [conversationId, currentUser?.id]);
+
   const handleManualReconnect = () => {
     setConnectionError(null);
     setIsReconnecting(true);
@@ -126,6 +180,30 @@ function Topbar({ conversationId }: { conversationId: number | null }) {
     return conversation.name || 'Group Chat';
   };
 
+  // Get typing user names
+  const getTypingUserNames = () => {
+    if (!conversation || typingUsers.size === 0) return [];
+
+    const typingNames: string[] = [];
+    typingUsers.forEach((userId) => {
+      if (conversation.type === 'direct') {
+        const member = conversation.members.find((m) => m.user_id === userId);
+        if (member) {
+          typingNames.push(member.user?.username || `User ${userId}`);
+        }
+      } else {
+        // For group chats, find member by user_id
+        const member = conversation.members.find((m) => m.user_id === userId);
+        if (member) {
+          typingNames.push(member.user?.username || `User ${userId}`);
+        } else {
+          typingNames.push(`User ${userId}`);
+        }
+      }
+    });
+    return typingNames;
+  };
+
   return (
     <div className='h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-3'>
       <div className='w-8 h-8 rounded-full bg-green-400 relative'>
@@ -135,15 +213,35 @@ function Topbar({ conversationId }: { conversationId: number | null }) {
       </div>
       <div className='flex flex-col'>
         <span className='text-sm font-medium'>{getConversationName()}</span>
-        <span className='text-xs text-slate-500'>
-          {isConnected
-            ? 'Online'
-            : isReconnecting
-            ? 'Reconnecting...'
-            : connectionError
-            ? 'Disconnected'
-            : 'Connecting...'}
-        </span>
+        {typingUsers.size > 0 ? (
+          <div className='text-xs text-slate-500 flex items-center gap-1'>
+            <div className='flex gap-0.5'>
+              <div className='w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce'></div>
+              <div
+                className='w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce'
+                style={{ animationDelay: '0.15s' }}
+              ></div>
+              <div
+                className='w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce'
+                style={{ animationDelay: '0.3s' }}
+              ></div>
+            </div>
+            <span className='italic'>
+              {getTypingUserNames().join(', ')}{' '}
+              {typingUsers.size === 1 ? 'is' : 'are'} typing...
+            </span>
+          </div>
+        ) : (
+          <span className='text-xs text-slate-500'>
+            {isConnected
+              ? 'Online'
+              : isReconnecting
+              ? 'Reconnecting...'
+              : connectionError
+              ? 'Disconnected'
+              : 'Connecting...'}
+          </span>
+        )}
         {connectionError && !isReconnecting && (
           <button
             onClick={handleManualReconnect}
@@ -309,7 +407,19 @@ function MessageList({ conversationId }: { conversationId: number | null }) {
   useEffect(() => {
     const handleNewMessage = (data: unknown) => {
       const message = data as ConversationMessage & { client_id?: string };
-      console.log('📨 Received new message via WebSocket:', message);
+      console.log('📨 Received new message via WebSocket:', {
+        messageId: message.id,
+        conversationId: message.conversation_id,
+        currentConversationId: conversationId,
+        senderId: message.sender_id,
+        senderUsername: message.sender?.username,
+        content: message.content?.substring(0, 50),
+        hasMedia: message.media?.length > 0,
+        mediaCount: message.media?.length || 0,
+        clientId: message.client_id,
+        createdAt: message.created_at,
+        fullMessage: message,
+      });
 
       // Only add message if it belongs to the current conversation
       if (message && message.conversation_id === conversationId) {
@@ -622,7 +732,6 @@ function MessageList({ conversationId }: { conversationId: number | null }) {
                 </div>
               );
             })}
-
             {/* Render pending messages (messages being sent) */}
             {pendingMessages.map((pending) => (
               <div key={pending.clientId} className='flex justify-end'>
@@ -646,6 +755,7 @@ function MessageList({ conversationId }: { conversationId: number | null }) {
                 </div>
               </div>
             ))}
+            git{' '}
           </>
         )}
         <div ref={messagesEndRef} />
@@ -662,6 +772,8 @@ function Composer({ conversationId }: { conversationId: number | null }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTypingRef = useRef(false);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -804,11 +916,66 @@ function Composer({ conversationId }: { conversationId: number | null }) {
     }
   };
 
+  // Handle typing status
+  const handleTyping = () => {
+    if (!conversationId) return;
+
+    // Send typing.start if not already typing
+    if (!isTypingRef.current) {
+      isTypingRef.current = true;
+      console.log('⌨️ Starting to type in conversation:', conversationId);
+      websocketManager.startTyping(conversationId);
+    }
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Set timeout to send typing.stop after 3 seconds of no typing
+    typingTimeoutRef.current = setTimeout(() => {
+      if (isTypingRef.current) {
+        isTypingRef.current = false;
+        console.log('⌨️ Stopping typing in conversation:', conversationId);
+        websocketManager.stopTyping(conversationId);
+      }
+    }, 3000);
+  };
+
+  // Stop typing when message is sent
+  const stopTyping = useCallback(() => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+    if (isTypingRef.current && conversationId) {
+      isTypingRef.current = false;
+      websocketManager.stopTyping(conversationId);
+    }
+  }, [conversationId]);
+
+  // Cleanup typing on unmount
+  useEffect(() => {
+    return () => {
+      stopTyping();
+    };
+  }, [stopTyping]);
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      stopTyping();
       handleSend(e);
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+    handleTyping();
+  };
+
+  const handleInputBlur = () => {
+    stopTyping();
   };
 
   if (!conversationId) {
@@ -868,8 +1035,9 @@ function Composer({ conversationId }: { conversationId: number | null }) {
           ref={inputRef}
           type='text'
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleInputChange}
           onKeyPress={handleKeyPress}
+          onBlur={handleInputBlur}
           className='flex-1 h-10 rounded-full bg-slate-100 px-4 outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-all'
           placeholder={
             isConnected

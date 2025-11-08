@@ -1,0 +1,90 @@
+.GoChat-dashboard {
+  .GoChat-sidebar {
+    transition: all 0.3s ease-in-out;
+    
+    &.collapsed {
+      width: 4rem; // w-16
+    }
+    
+    &.expanded {
+      width: 8.5rem; 
+    }
+    
+    .sidebar-toggle-btn {
+      transition: background-color 0.2s ease-in-out;
+      
+      &:hover {
+        background-color: rgb(30 41 59); // bg-slate-800
+      }
+    }
+    
+    .sidebar-item {
+      transition: background-color 0.2s ease-in-out;
+      cursor: pointer;
+      
+      &:hover {
+        background-color: rgb(203 213 225); // bg-slate-300
+      }
+      
+      .sidebar-text {
+        transition: all 0.3s ease-in-out;
+        
+        &.collapsed {
+          opacity: 0;
+          transform: translateX(-0.5rem);
+          width: 0;
+          overflow: hidden;
+        }
+        
+        &.expanded {
+          opacity: 1;
+          transform: translateX(0);
+          width: auto;
+        }
+      }
+    }
+    
+    .sidebar-avatar {
+      transition: all 0.3s ease-in-out;
+      
+      &.collapsed {
+        width: 2rem; // w-8
+        height: 2rem; // h-8
+      }
+      
+      &.expanded {
+        width: 2.5rem; // w-10
+        height: 2.5rem; // h-10
+      }
+    }
+
+  }
+}
+
+.GoChat-thread-list {
+  .message-status-selection {
+    position: relative;
+    
+    .message-status-button {
+      transition: all 0.2s ease-in-out;
+      
+      &:not(:last-child) {
+        border-right: 1px solid rgb(203 213 225); // border-slate-300
+      }
+      
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+    
+    .sliding-indicator {
+      position: absolute;
+      bottom: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      border-radius: 1px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(59, 130, 246, 0.3);
+    }
+  }
+}

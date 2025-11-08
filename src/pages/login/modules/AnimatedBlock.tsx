@@ -20,9 +20,8 @@ const Moved_Tile = () => {
             <span className='text-white text-xs font-bold'>+</span>
           </div>
           <div className='mt-4'>
-            <h3 className='text-black text-sm font-bold'>Building trust</h3>
-            <h3 className='text-black text-sm font-bold'>in blockchain</h3>
-            <h3 className='text-black text-sm font-bold'>technology</h3>
+            <h3 className='text-black text-sm font-bold'>Connecting people</h3>
+            <h3 className='text-black text-sm font-bold'>in a new way</h3>
           </div>
         </div>
       </div>
@@ -32,8 +31,10 @@ const Moved_Tile = () => {
             <span className='text-white text-xs font-bold'>+</span>
           </div>
           <div className='mt-4'>
-            <h3 className='text-black text-sm font-bold'>Own</h3>
-            <h3 className='text-black text-sm font-bold'>your power</h3>
+            <h3 className='text-black text-sm font-bold'>Make more friends</h3>
+            <h3 className='text-black text-sm font-bold'>
+              from all over the world
+            </h3>
           </div>
         </div>
       </div>

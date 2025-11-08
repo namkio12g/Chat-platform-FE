@@ -13,12 +13,18 @@ import {
   incrementByAmount,
 } from '@/store/slices/counterSlice';
 import { usePosts } from '@/hooks/usePosts';
+import { ThemeToggle } from '@/context/ThemeToggle';
 import { MessageCircle, Plus, Minus, Database } from 'lucide-react';
+import { Toaster } from 'sonner';
+import { useAuthInitialization } from '@/hooks/useAuthInitialization';
 
 function App() {
   const count = useAppSelector((state) => state.counter.value);
   const dispatch = useAppDispatch();
   const { data: posts, isLoading, error } = usePosts();
+
+  // Initialize authentication from localStorage
+  useAuthInitialization();
 
   return (
     <div className='min-h-screen bg-background p-8'>
@@ -28,6 +34,9 @@ function App() {
           <div className='flex items-center justify-center gap-2'>
             <MessageCircle className='h-8 w-8 text-primary' />
             <h1 className='text-4xl font-bold'>Chat Platform</h1>
+            <div className='ml-auto'>
+              <ThemeToggle />
+            </div>
           </div>
           <p className='text-muted-foreground text-lg'>
             Built with React, Redux, TanStack Query, Tailwind CSS, and shadcn/ui
@@ -155,6 +164,7 @@ function App() {
           </CardContent>
         </Card>
       </div>
+      <Toaster />
     </div>
   );
 }

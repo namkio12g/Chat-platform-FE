@@ -2,34 +2,50 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginUser } from '@/store/thunks/authThunks';
+import {
+  selectAuthLoading,
+  selectAuthError,
+} from '@/store/selectors/authSelectors';
+import { toast } from 'sonner';
+import { loginFailure, loginSuccess } from '@/store/slices/authSlice';
 
 export default function FormBlock() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(selectAuthLoading);
+  const error = useAppSelector(selectAuthError);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    // Simulate login process
-    setTimeout(() => {
-      setIsLoading(false);
-      // For demo purposes, navigate to dashboard on any login attempt
+    const result = await dispatch(loginUser({ email, password }));
+
+    if (loginUser.fulfilled.match(result)) {
+      toast.success('Login successful! Welcome back!');
+      dispatch(
+        loginSuccess({ user: result.payload.user, token: result.payload.token })
+      );
       navigate('/dashboard');
-    }, 1000);
+    } else if (loginUser.rejected.match(result)) {
+      toast.error((result.payload as string) || 'Login failed');
+      dispatch(loginFailure((result.payload as string) || 'Login failed'));
+    }
   };
 
   return (
-    <div className='w-1/2 h-screen bg-white flex items-center justify-center p-8'>
+    <div className='w-1/2 h-screen bg-background flex items-center justify-center p-8  '>
       <div className='w-full max-w-md'>
         {/* Header */}
         <div className='text-center mb-8'>
           <div className='flex items-center justify-center gap-2 mb-4'>
             <MessageCircle className='h-10 w-10 text-primary' />
-            <h1 className='text-3xl font-bold'>Chat Platform</h1>
+            <h1 className='text-3xl font-bold'>GoChat Platform</h1>
           </div>
           <p className='text-muted-foreground'>
             Sign in to your account to continue
@@ -37,7 +53,7 @@ export default function FormBlock() {
         </div>
 
         {/* Login Form */}
-        <div className='bg-white rounded-2xl p-8 shadow-xl border border-gray-100'>
+        <div className='bg-slate-200 rounded-2xl p-8 shadow-xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700'>
           <form onSubmit={handleSubmit} className='space-y-6'>
             <div className='space-y-2'>
               <label htmlFor='email' className='text-sm font-medium'>
@@ -97,6 +113,12 @@ export default function FormBlock() {
               </button>
             </div>
 
+            {error && (
+              <div className='p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm'>
+                {error}
+              </div>
+            )}
+
             <Button
               type='submit'
               className='w-full py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl'
@@ -116,18 +138,15 @@ export default function FormBlock() {
           <div className='mt-6 text-center'>
             <p className='text-sm text-muted-foreground'>
               Don't have an account?{' '}
-              <button className='text-primary hover:underline transition-colors'>
+              <button
+                type='button'
+                onClick={() => navigate('/signup')}
+                className='text-primary hover:underline transition-colors'
+              >
                 Sign up
               </button>
             </p>
           </div>
-        </div>
-
-        {/* Demo Info */}
-        <div className='mt-6 p-4 bg-muted/50 rounded-lg'>
-          <p className='text-sm text-muted-foreground text-center'>
-            <strong>Demo:</strong> Enter any email and password to continue
-          </p>
         </div>
       </div>
     </div>
